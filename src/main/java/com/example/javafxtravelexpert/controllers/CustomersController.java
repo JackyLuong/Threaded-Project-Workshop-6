@@ -6,7 +6,10 @@ package com.example.javafxtravelexpert.controllers;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 
@@ -21,7 +24,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -82,9 +87,6 @@ public class CustomersController {
 
     @FXML // fx:id="tvCustomers"
     private TableView<Customers> tvCustomers; // Value injected by FXMLLoader
-
-    @FXML
-    private TextField txtCustomer;
 
     ObservableList<Customers> data = FXCollections.observableArrayList();
 
@@ -153,199 +155,6 @@ public class CustomersController {
         //add new customer data
         btnCustAdd.setOnMouseClicked(mouseEvent -> openCustDialog(false));
 
-        //search entered customer
-        btnCustSearch.setOnMouseClicked(mouseEvent -> {
-            if (txtCustomer.getText().isEmpty()) {
-                getCustomers();
-            }else
-                getSearchCustomer();
-        });
-
-        //delete customer
-        btnCustDelete.setOnMouseClicked(mouseEvent -> {
-
-
-            //ask for confirmation
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete customer?");
-            alert.setContentText("Are you sure to delete the customer?");
-            ButtonType yesButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(yesButton, noButton);
-            alert.showAndWait().ifPresent(type ->{
-                if (type == yesButton){
-
-                    delCustomer(); // call delete method
-                    //get update customer list
-                    getCustomers();
-                    tvCustomers.getSelectionModel().select(0);// highlight the first customer data
-                    ;
-                }
-            });
-
-        });
-
-    }
-
-    /**
-     * Method that deletes the customer data and insert to the archive db
-     */
-
-    private void delCustomer() {
-
-        //define and assign variables
-        Customers customer = data.get(selectedCustomerIndex);
-        int oldPackageId = customer.getCustId();
-        String firstName = customer.getCustFirstName();
-        String lastName = customer.getCustLastName();
-        String address = customer.getCustAddress();
-        String city = customer.getCustCity();
-        String province = customer.getCustProvince();
-        String postal = customer.getCustPostal();
-        String country = customer.getCustCountry();
-        String homeNo = customer.getCustHomeNum();
-        String busNo = customer.getCustBusNum();
-        String email = customer.getCustEmail();
-        int agentId = customer.getCustAgentId();
-
-        DBConnectionMngr cm = DBConnectionMngr.getInstance(); //get conn obj
-        TravelExpertsProperties prop = new TravelExpertsProperties(); //instantiate property obj
-        PreparedStatement pstmt = null;
-        String insertPsql = "INSERT INTO `CUSTOMERS` (" +
-                "`CustomerIdOld`," +
-                "`CustFirstName`," +
-                "`CustLastName`," +
-                "`CustAddress`," +
-                "`CustCity`," +
-                "`CustProv`," +
-                "`CustPostal`," +
-                "`CustCountry`," +
-                "`CustHomePhone`," +
-                "`CustBusPhone`," +
-                "`CustEmail`," +
-                "`AgentId`)" +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-
-        String delPsql = "DELETE FROM `CUSTOMERS` WHERE CustomerId=?";
-
-        //connect to archive db
-        Connection archiveConn = cm.getConnection(prop.getDatabaseURLArchive(),prop.getDatabaseUser(), prop.getDatabasePwd());
-
-        //connect to prod db
-        Connection conn = cm.getConnection(prop.getDatabaseURL(),prop.getDatabaseUser(),prop.getDatabasePwd());
-
-        if(archiveConn != null && conn != null) {
-            try {
-
-                //initiate delete row
-                archiveConn.setAutoCommit(false);
-                pstmt = archiveConn.prepareStatement(insertPsql);
-                //set sql parameter value
-                pstmt.setInt(1, oldPackageId);
-                pstmt.setString(2, firstName);
-                pstmt.setString(3, lastName);
-                pstmt.setString(4, address);
-                pstmt.setString(5, city);
-                pstmt.setString(6, province);
-                pstmt.setString(7, postal);
-                pstmt.setString(8, country);
-                pstmt.setString(9, homeNo);
-                pstmt.setString(10, busNo);
-                pstmt.setString(11, email);
-                pstmt.setInt(12, agentId);
-
-                int insertRow = pstmt.executeUpdate();
-
-                //initiate insert row to archive db
-                conn.setAutoCommit(false);
-
-                //set sql parameter value
-                pstmt = conn.prepareStatement(delPsql);
-                pstmt.setInt(1, customer.getCustId());
-                int delRow = pstmt.executeUpdate();
-
-                //validate the number of delete/insert row
-                if (insertRow == 1 && delRow == 1) {
-                    archiveConn.commit(); // commit insert
-                    conn.commit(); //commit delete
-
-                } else {
-                    archiveConn.rollback(); //rollback insert
-                    conn.rollback(); //rollback delete
-                    //alert user on the failed delete
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Delete failed");
-                    alert.setContentText("Customer cannot be deleted!");
-                    alert.showAndWait();
-                }
-
-            }catch (SQLIntegrityConstraintViolationException e) {
-                //alert user on the failed delete
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Delete failed");
-                alert.setContentText("Customer has booking and cannot be deleted!");
-                alert.showAndWait();
-
-            }catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    //close connection objs
-                    pstmt.close();
-                    archiveConn.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        }
-
-    }
-
-    /**
-     * Method that query the entered customer name by the user
-     */
-    private void getSearchCustomer() {
-        data.clear();
-        //initiate DB connection and jdbc objects
-        DBConnectionMngr cm = DBConnectionMngr.getInstance();
-        TravelExpertsProperties prop = new TravelExpertsProperties();
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        //define sql string
-        String psql = "SELECT * FROM CUSTOMERS WHERE CUSTLASTNAME LIKE? OR CUSTFIRSTNAME LIKE? ORDER BY CustLastName";
-        String searchCust = "%" + txtCustomer.getText() + "%";
-        Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());
-        //check the connection object
-        if(conn != null){
-            try {
-                //execute the sql statement
-                pstmt = conn.prepareStatement(psql);
-                pstmt.setString(1,searchCust);
-                pstmt.setString(2,searchCust);
-                rs = pstmt.executeQuery();
-                //loop through the result
-                while (rs.next()){
-                    //create obj and add to data list
-                    data.add(new Customers(rs.getInt(1),rs.getString(2),rs.getString(3),
-                            rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),
-                            rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),
-                            rs.getInt(12)));
-
-                }
-                //close jdbc objs
-                pstmt.close();
-                rs.close();
-                conn.close();
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-
     }
 
 
@@ -396,30 +205,24 @@ public class CustomersController {
      */
     private void getCustomers() {
         data.clear();
-        //initiate DB connection and initialize jdbc objects
         DBConnectionMngr cm = DBConnectionMngr.getInstance();
         TravelExpertsProperties prop = new TravelExpertsProperties();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        //define sql string
         String psql = "SELECT * FROM CUSTOMERS ORDER BY CustLastName";
         Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());
-        //check connection obj
+
         if(conn != null){
             try {
-                //execute sql
                 pstmt = conn.prepareStatement(psql);
                 rs = pstmt.executeQuery();
-                //loop through the result
                 while (rs.next()){
-                    //create customer obj and add to data list
                     data.add(new Customers(rs.getInt(1),rs.getString(2),rs.getString(3),
                             rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),
                             rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),
                             rs.getInt(12)));
 
                 }
-                //close jdbc obj
                 pstmt.close();
                 rs.close();
                 conn.close();
@@ -428,6 +231,8 @@ public class CustomersController {
                 e.printStackTrace();
             }
         }
+
+
     }
 
 }

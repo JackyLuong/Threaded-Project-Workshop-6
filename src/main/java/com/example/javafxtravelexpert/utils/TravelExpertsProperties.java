@@ -12,7 +12,6 @@ public class TravelExpertsProperties {
     private String databaseURL;
     private String databaseUser;
     private String databasePwd;
-    private String databaseURLArchive;
 
 
 
@@ -30,7 +29,6 @@ public class TravelExpertsProperties {
             this.databaseURL = prop.getProperty("dbUrl");
             this.databaseUser = prop.getProperty("dbUser");
             this.databasePwd = prop.getProperty("dbPwd");
-            this.databaseURLArchive = prop.getProperty("dbUrlArchive");
 
         } catch (FileNotFoundException fileErr) {
             fileErr.printStackTrace();
@@ -54,6 +52,4 @@ public class TravelExpertsProperties {
     public String getDatabasePwd() {
         return databasePwd;
     }
-
-    public String getDatabaseURLArchive() { return databaseURLArchive;}
 }

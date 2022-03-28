@@ -14,7 +14,7 @@
          <top>
             <AnchorPane id="apCustTop" prefHeight="100.0" prefWidth="900.0" BorderPane.alignment="CENTER">
                <children>
-                  <TextField id="txtCustSearch" fx:id="txtCustomer" layoutX="30.0" layoutY="40.0" prefHeight="25.0" prefWidth="280.0" promptText="Customer name . . ." AnchorPane.topAnchor="40.0" />
+                  <TextField id="txtCustSearch" layoutX="30.0" layoutY="40.0" prefHeight="25.0" prefWidth="280.0" promptText="Customer name . . ." AnchorPane.topAnchor="40.0" />
                   <Button id="btnCustSearch" fx:id="btnCustSearch" layoutX="370.0" layoutY="41.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" styleClass="btnCustClass" text="Search" AnchorPane.topAnchor="41.0" />
                </children>
                <BorderPane.margin>
