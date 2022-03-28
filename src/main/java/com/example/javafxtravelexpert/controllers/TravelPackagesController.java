@@ -1,14 +1,15 @@
-package com.example.threaded_project_workshop_6;
+package com.example.javafxtravelexpert.controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
+import com.example.javafxtravelexpert.entity.Packages;
+import com.example.javafxtravelexpert.utils.DBConnectionMngr;
+import com.example.javafxtravelexpert.utils.TravelExpertsProperties;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -46,32 +47,34 @@ public class TravelPackagesController {
     private Button btnModify;
 
     @FXML
-    private TableColumn<Package, Double> colAgencyCommission;
+    private TableColumn<Packages, Double> colAgencyCommission;
 
     @FXML
-    private TableColumn<Package, Double> colBasePrice;
+    private TableColumn<Packages, Double> colBasePrice;
 
     @FXML
-    private TableColumn<Package, String> colDescription;
+    private TableColumn<Packages, String> colDescription;
 
     @FXML
-    private TableColumn<Package, Date> colEndDate;
+    private TableColumn<Packages, Date> colEndDate;
 
     @FXML
-    private TableColumn<Package, Integer> colPkgId;
+    private TableColumn<Packages, Integer> colPkgId;
 
     @FXML
-    private TableColumn<Package, String> colPkgName;
+    private TableColumn<Packages, String> colPkgName;
 
     @FXML
-    private TableColumn<Package, Date> colStartDate;
+    private TableColumn<Packages, Date> colStartDate;
 
     @FXML
-    private TableView<Package> tvPackages;
+    private TableView<Packages> tvPackages;
 
-    private ObservableList<Package> data = FXCollections.observableArrayList();
+    private ObservableList<Packages> data = FXCollections.observableArrayList();
 
     private int selectedPackageIndex;
+
+    private String packageAddModFXML = "/com/example/javafxtravelexpert/travel-packages-add-update-view.fxml";
 
     @FXML
     void initialize() {
@@ -89,13 +92,13 @@ public class TravelPackagesController {
         assert tvPackages != null : "fx:id=\"tvPackages\" was not injected: check your FXML file 'travel-packages-view.fxml'.";
 
         //set columns to retrieve its corresponding data
-        colPkgId.setCellValueFactory(new PropertyValueFactory<Package, Integer>("packageId"));
-        colPkgName.setCellValueFactory(new PropertyValueFactory<Package, String>("pkgName"));
-        colStartDate.setCellValueFactory(new PropertyValueFactory<Package, Date>("pkgStartDate"));
-        colEndDate.setCellValueFactory(new PropertyValueFactory<Package, Date>("pkgEndDate"));
-        colDescription.setCellValueFactory(new PropertyValueFactory<Package, String>("pkgDesc"));
-        colBasePrice.setCellValueFactory(new PropertyValueFactory<Package, Double>("pkgBasePrice"));
-        colAgencyCommission.setCellValueFactory(new PropertyValueFactory<Package, Double>("pkgAgencyCommission"));
+        colPkgId.setCellValueFactory(new PropertyValueFactory<Packages, Integer>("packageId"));
+        colPkgName.setCellValueFactory(new PropertyValueFactory<Packages, String>("pkgName"));
+        colStartDate.setCellValueFactory(new PropertyValueFactory<Packages, Date>("pkgStartDate"));
+        colEndDate.setCellValueFactory(new PropertyValueFactory<Packages, Date>("pkgEndDate"));
+        colDescription.setCellValueFactory(new PropertyValueFactory<Packages, String>("pkgDesc"));
+        colBasePrice.setCellValueFactory(new PropertyValueFactory<Packages, Double>("pkgBasePrice"));
+        colAgencyCommission.setCellValueFactory(new PropertyValueFactory<Packages, Double>("pkgAgencyCommission"));
 
         tvPackages.setItems(data);
 
@@ -132,35 +135,6 @@ public class TravelPackagesController {
             selectedPackageIndex = tvPackages.getSelectionModel().getSelectedIndex();
     }
 
-    /**
-     * Reads connection properties file and returns url, username, and password to connect to the database
-     * @return
-     */
-    private String[] getConnectionCredentials()
-    {
-        //Connection credentials
-        String user = "";
-        String password = "";
-        String url = "";
-
-        //read connection properties to connection to database
-        try
-        {
-            FileInputStream fileInputStream = new FileInputStream("src/main/resources/com/example/threaded_project_workshop_6/ConnectionProperties.properties");
-            Properties p = new Properties();
-            p.load(fileInputStream);
-            url = (String) p.get("url");
-            user = (String) p.get("user");
-            password = (String) p.get("password");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        String[] credentials = new String[]{url, user, password};
-        return credentials;
-    }
 
     /**
      * Extract data from packages table in travel experts database
@@ -171,15 +145,13 @@ public class TravelPackagesController {
         data.clear();
 
         //load the agents from the database
-        String[] credentials = getConnectionCredentials();
-        String url = credentials[0];
-        String userName = credentials[1];
-        String password = credentials[2];
+        DBConnectionMngr cm = DBConnectionMngr.getInstance();
+        TravelExpertsProperties prop = new TravelExpertsProperties();
 
         try
         {
             //connection string to the database
-            Connection conn = DriverManager.getConnection(url, userName, password);
+            Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());
             //create sql statement
             Statement stmt = conn.createStatement();
             //execute sql statement
@@ -189,7 +161,7 @@ public class TravelPackagesController {
             //get all data from agents table
             while (rs.next())
             {
-                data.add(new Package
+                data.add(new Packages
                             (
                                 rs.getInt(1),
                                 rs.getString(2),
@@ -217,7 +189,7 @@ public class TravelPackagesController {
     private void openDialog(boolean isEdit)
     {
         //loads edit agent dialog
-        FXMLLoader fxmlLoader = new FXMLLoader(TravelExpertsApplication.class.getResource("travel-packages-add-update-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(packageAddModFXML));
         Parent parent = null; //set parent variable to be called later in the dialog
 
         try
@@ -229,19 +201,17 @@ public class TravelPackagesController {
             e.printStackTrace();
         }
         //add and edit packages dialog controller
-        TravelPackagesAddUpdateController addUpdateController = fxmlLoader.<TravelPackagesAddUpdateController>getController();
+        TravelPackagesAddUpdateController addUpdateController = fxmlLoader.getController();
 
         //transfer data information to add/edit packages dialog
         addUpdateController.setObservableList(data);
 
-        //transfer connection credentials to add/edit dialog
-        addUpdateController.getConnectionCredentials(getConnectionCredentials());
 
         //Display selected package information if user is modifying
         if (isEdit == true)
             addUpdateController.initPackage(selectedPackageIndex);
 
-        Scene scene = new Scene(parent, 1000, 600);
+        Scene scene = new Scene(parent);
 
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);

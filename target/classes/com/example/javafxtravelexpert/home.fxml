@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="apHome" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: white;" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxtravelexpert.controllers.HomeController">
+   <children>
+      <ImageView fitHeight="588.0" fitWidth="855.0" layoutX="140.0" layoutY="56.0" opacity="0.35" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../images/logo.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="242.0" layoutY="344.0" prefHeight="29.0" prefWidth="516.0" text="Let us transport you with our highly affordable and reliable holiday packages . . ." textFill="#a0a0a0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="279.0" layoutY="274.0" prefHeight="59.0" prefWidth="418.0" text="T R A V E L  E X P E R T S" textFill="#ff6e18">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.threaded_project_workshop_6.TravelPackagesAddUpdateController">
+<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxtravelexpert.controllers.TravelPackagesAddUpdateController">
     <children>
         <VBox layoutX="117.0" layoutY="25.0" prefHeight="253.0" prefWidth="153.0">
             <children>

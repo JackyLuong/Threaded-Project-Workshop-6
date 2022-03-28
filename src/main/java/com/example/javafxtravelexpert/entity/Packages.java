@@ -1,4 +1,4 @@
-package com.example.threaded_project_workshop_6;
+package com.example.javafxtravelexpert.entity;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.sql.Date;
 
-public class Package
+public class Packages
 {
     private SimpleIntegerProperty packageId;
     private SimpleStringProperty pkgName;
@@ -16,9 +16,9 @@ public class Package
     private SimpleDoubleProperty pkgBasePrice;
     private SimpleDoubleProperty pkgAgencyCommission;
 
-    public Package(int packageId, String pkgName,
-                   Date pkgStartDate, Date pkgEndDate, String pkgDesc,
-                   double pkgBasePrice, double pkgAgencyCommission)
+    public Packages(int packageId, String pkgName,
+                    Date pkgStartDate, Date pkgEndDate, String pkgDesc,
+                    double pkgBasePrice, double pkgAgencyCommission)
     {
         this.packageId = new SimpleIntegerProperty(packageId);
         this.pkgName = new SimpleStringProperty(pkgName);

@@ -1,9 +1,10 @@
-package com.example.threaded_project_workshop_6;
+package com.example.javafxtravelexpert.utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-import java.sql.Date;
+import java.sql.*;
 
 public class Validator
 {
@@ -188,4 +189,80 @@ public class Validator
 
         return result;
     }
+
+
+
+
+
+
+    /**
+     * Checks if the login credentials are present
+     * @param text
+     * @return true if present
+     */
+    public static boolean isLoginDataPresent(TextField text, Label label){
+        boolean isValid = true;
+        if(text.getText().isEmpty()){
+            isValid = false;
+            label.setText(text.getAccessibleText()+ " is required.");
+            text.getStyleClass().add("textError");
+            text.requestFocus();
+
+        }
+        return isValid;
+    }
+
+    /**
+     * Validate the email and password against the DB data.
+     * @param usr, passwd
+     * @return true if authenticated
+     */
+    public static boolean isAuthenticated(TextField usr, TextField passwd){
+        boolean isValidUser = true;
+
+        //initiate DB connection
+        DBConnectionMngr cm = DBConnectionMngr.getInstance();
+        TravelExpertsProperties prop = new TravelExpertsProperties();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String psql = "SELECT COUNT(*) FROM AGENTS WHERE AGTEMAIL = ? and AGTPASSWORD =?";
+        Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),prop.getDatabasePwd());
+        int count = 0;
+
+        if(conn != null){
+            try{
+
+                pstmt = conn.prepareStatement(psql);
+                pstmt.setString(1, usr.getText());
+                pstmt.setString(2, passwd.getText());
+                rs = pstmt.executeQuery();
+                while (rs.next()){
+                    count = rs.getInt(1);
+                }
+
+                rs.close();
+                pstmt.close();
+                conn.close();
+            } catch (SQLException sqlErr) {
+                sqlErr.printStackTrace();
+            }
+        }
+
+        if (count != 1){
+            isValidUser = false;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            usr.clear();
+            passwd.clear();
+            usr.requestFocus();
+            alert.setTitle("Invalid Credentials");
+            alert.setHeaderText("Login Failed!");
+            alert.setContentText("Incorrect Email and/or Password. Please try again");
+            alert.showAndWait();
+        }
+        return  isValidUser;
+    }
+
+
+
+
 }

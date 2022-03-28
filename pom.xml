@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>Threaded_Project_Workshop_6</artifactId>
+    <artifactId>JavaFXTravelExpertLogin</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Threaded_Project_Workshop_6</name>
+    <name>JavaFXTravelExpertLogin</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example.threaded_project_workshop_6/com.example.threaded_project_workshop_6.TravelExpertsApplication
+                                com.example.javafxtravelexpertlogin/com.example.javafxtravelexpert.Login
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

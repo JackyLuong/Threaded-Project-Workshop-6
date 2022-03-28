@@ -1,12 +1,13 @@
-package com.example.threaded_project_workshop_6;
+package com.example.javafxtravelexpert.controllers;
 
 import java.net.URL;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 
+import com.example.javafxtravelexpert.entity.Packages;
+import com.example.javafxtravelexpert.utils.DBConnectionMngr;
+import com.example.javafxtravelexpert.utils.TravelExpertsProperties;
+import com.example.javafxtravelexpert.utils.Validator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -53,7 +54,7 @@ public class TravelPackagesAddUpdateController {
     @FXML
     private TextField tfStartDate;
 
-    private ObservableList<Package> mainObservableList = FXCollections.observableArrayList();
+    private ObservableList<Packages> mainObservableList = FXCollections.observableArrayList();
 
     private int selectedPackageIndex;
 
@@ -101,7 +102,7 @@ public class TravelPackagesAddUpdateController {
      * method to receive to the observable list in main controller
      * @param data
      */
-    public void setObservableList(ObservableList<Package> data)
+    public void setObservableList(ObservableList<Packages> data)
     {
         mainObservableList = data;
     }
@@ -114,7 +115,7 @@ public class TravelPackagesAddUpdateController {
         isEdit = true; //change form to update the selected package
 
         this.selectedPackageIndex = selectedPackageIndex;
-        Package selectedPackage = mainObservableList.get(selectedPackageIndex);
+        Packages selectedPackage = mainObservableList.get(selectedPackageIndex);
 
         String strEndDate = selectedPackage.getPkgEndDate().toString(); //convert end date to string
         String strStartDate = selectedPackage.getPkgStartDate().toString(); // convert start date to string
@@ -131,10 +132,10 @@ public class TravelPackagesAddUpdateController {
      * Gets connection credentials from main controller
      * @return
      */
-    public void getConnectionCredentials(String[] credentials)
-    {
-        connectionCredentials = credentials;
-    }
+//    public void getConnectionCredentials(String[] credentials)
+//    {
+//        connectionCredentials = credentials;
+//    }
 
     /**
      * Add package to database
@@ -151,14 +152,11 @@ public class TravelPackagesAddUpdateController {
                 Validator.isEndDateValid(tfStartDate, tfEndDate) &&
                 Validator.isDoubleInRange(0,basePrice,tfAgencyCommission))
         {
-            //load the agents from the database
-            String[] credentials = connectionCredentials;
-            String url = credentials[0];
-            String userName = credentials[1];
-            String password = credentials[2];
+            DBConnectionMngr cm = DBConnectionMngr.getInstance(); // get connection obj
+            TravelExpertsProperties prop = new TravelExpertsProperties(); // instantiate property obj
 
             try {
-                Connection conn = DriverManager.getConnection(url, userName, password); // connect to database
+                Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),  prop.getDatabasePwd()); //initiate db connection
                 //SQL String to add package to data
                 String sql = "INSERT INTO `packages`(`PackageId`, " +
                         "`PkgName`, " +
@@ -214,13 +212,12 @@ public class TravelPackagesAddUpdateController {
             Validator.isDoubleInRange(0,basePrice,tfAgencyCommission))
         {
             //load the agents from the database
-            String[] credentials = connectionCredentials;
-            String url = credentials[0];
-            String userName = credentials[1];
-            String password = credentials[2];
+            DBConnectionMngr cm = DBConnectionMngr.getInstance(); // get connection obj
+            TravelExpertsProperties prop = new TravelExpertsProperties(); // instantiate property obj
+
 
             try {
-                Connection conn = DriverManager.getConnection(url, userName, password); // connect to database
+                Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),  prop.getDatabasePwd()); // connect to database
                 //SQL String to add package to data
                 String sql = "UPDATE `packages` " +
                         "SET `PkgName`=?," +
@@ -236,7 +233,7 @@ public class TravelPackagesAddUpdateController {
                 Date endDate = Date.valueOf(tfEndDate.getText());
 
                 //selected package
-                Package selectedPackage = mainObservableList.get(selectedPackageIndex);
+                Packages selectedPackage = mainObservableList.get(selectedPackageIndex);
 
                 //Assign values for question marks
                 stmt.setString(1, tfPkgName.getText());
