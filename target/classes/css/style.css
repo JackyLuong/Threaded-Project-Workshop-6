@@ -20,7 +20,15 @@ root {
 /*}*/
 
 /*Login CSS*/
-
+.button{
+    -fx-background-color: #ff6e18;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
+.button:hover {
+    -fx-background-color: #ff964f;
+    -fx-text-fill: white;
+}
 #apLogin {
     -fx-background-image: url("../images/morainelake.jpg");
     -fx-background-size: cover;
@@ -70,6 +78,7 @@ set the prompt text property #a0a0a0
 .mainButton {
     -fx-background-color: white;
     -fx-background-radius: 20px;
+    -fx-text-fill: black;
 
 }
 
@@ -96,6 +105,7 @@ set the prompt text property #a0a0a0
 
 #btnLogout {
     -fx-background-color: white;
+    -fx-text-fill: black;
 }
 
 #btnLogout:focused {
