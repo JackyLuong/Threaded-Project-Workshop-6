@@ -15,8 +15,10 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -105,25 +107,66 @@ public class TravelPackagesController {
         getPackages();
 
         //add packages to database
-        btnAdd.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
+        btnAdd.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent mouseEvent)
-            {
+            public void handle(MouseEvent mouseEvent) {
                 openDialog(false);
             }
         });
 
         //modify selected package
-        btnModify.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
+        btnModify.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent mouseEvent)
-            {
+            public void handle(MouseEvent mouseEvent) {
                 openDialog(true);
             }
         });
-    }
+
+
+
+            Packages selectedPackage = data.get(selectedPackageIndex);
+            btnDelete.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    String user = "Calgary";
+                    String password = "C@lgary";
+                    String url = "jdbc:mysql://localhost:3306/travelexperts";
+
+
+                    try {
+                        Connection conn = DriverManager.getConnection(url, user, password);
+
+                        String sql = "DELETE FROM `packages` WHERE packageId=?";
+                        PreparedStatement stmt = conn.prepareStatement(sql);
+                        stmt.setInt(1, Integer.parseInt(colPkgId.getText()));
+                        int numRows = stmt.executeUpdate();
+                        if (numRows == 0) {
+                            System.out.println("update failed");
+                        }
+                        conn.close();
+
+                        Node node = (Node) mouseEvent.getSource();
+                        Stage stage = (Stage) node.getScene().getWindow();
+                        stage.close();
+
+                        //get reference to stage and close it
+                    } catch (SQLIntegrityConstraintViolationException e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Delete failed");
+                        alert.setContentText("Agent has customers and cannot be deleted");
+                        alert.showAndWait();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+
+            });
+
+
+        }
+
 
     /**
      * Gets table index based on what row the user clicked on
