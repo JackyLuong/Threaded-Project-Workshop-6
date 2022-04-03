@@ -107,65 +107,115 @@ public class TravelPackagesController {
         getPackages();
 
         //add packages to database
-        btnAdd.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        btnAdd.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
             @Override
-            public void handle(MouseEvent mouseEvent) {
+            public void handle(MouseEvent mouseEvent)
+            {
                 openDialog(false);
             }
         });
 
         //modify selected package
-        btnModify.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        btnModify.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
             @Override
-            public void handle(MouseEvent mouseEvent) {
+            public void handle(MouseEvent mouseEvent)
+            {
                 openDialog(true);
             }
         });
 
+        btnDelete.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent mouseEvent)
+            {
+                //Create variables for each column in the packages table
+                Packages selectedPackage = data.get(selectedPackageIndex);
+                int packageId = selectedPackage.getPackageId();
+                String pkgName = selectedPackage.getPkgName();
+                Date pkgStartDate = selectedPackage.getPkgStartDate();
+                Date pkgEndDate = selectedPackage.getPkgEndDate();
+                String pkgDesc = selectedPackage.getPkgDesc();
+                double pkgBasePrice = selectedPackage.getPkgBasePrice();
+                double pkgAgencyCommission = selectedPackage.getPkgAgencyCommission();
 
+                //Call properties object
+                TravelExpertsProperties properties = new TravelExpertsProperties();
 
-            Packages selectedPackage = data.get(selectedPackageIndex);
-            btnDelete.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    String user = "Calgary";
-                    String password = "C@lgary";
-                    String url = "jdbc:mysql://localhost:3306/travelexperts";
+                try
+                {
+                    //connect to archive database
+                    Connection archiveConn = DriverManager.getConnection(properties.getDatabaseURLArchive(), properties.getDatabaseUser(), properties.getDatabasePwd());
 
+                    //set save point to undo insert if delete function fails
+                    Savepoint savepoint = archiveConn.setSavepoint("insertSavepoint");
 
-                    try {
-                        Connection conn = DriverManager.getConnection(url, user, password);
+                    //insert string to archive database
+                    String insertSQL = "INSERT INTO `packages`(`PackageId`, " +
+                            "`PkgName`, " +
+                            "`PkgStartDate`," +
+                            "`PkgEndDate`, " +
+                            "`PkgDesc`, " +
+                            "`PkgBasePrice`, " +
+                            "`PkgAgencyCommission`) " +
+                            "VALUES (?,?,?,?,?,?,?)";
+                    PreparedStatement insertSTMT = archiveConn.prepareStatement(insertSQL);
 
-                        String sql = "DELETE FROM `packages` WHERE packageId=?";
-                        PreparedStatement stmt = conn.prepareStatement(sql);
-                        stmt.setInt(1, Integer.parseInt(colPkgId.getText()));
-                        int numRows = stmt.executeUpdate();
-                        if (numRows == 0) {
-                            System.out.println("update failed");
-                        }
-                        conn.close();
+                    //set values to question marks
+                    insertSTMT.setInt(1, packageId);
+                    insertSTMT.setString(2, pkgName);
+                    insertSTMT.setDate(3, pkgStartDate);
+                    insertSTMT.setDate(4, pkgEndDate);
+                    insertSTMT.setString(5, pkgDesc);
+                    insertSTMT.setDouble(6, pkgBasePrice);
+                    insertSTMT.setDouble(7, pkgAgencyCommission);
 
-                        Node node = (Node) mouseEvent.getSource();
-                        Stage stage = (Stage) node.getScene().getWindow();
-                        stage.close();
+                    //execute insert
+                    int numInsertRows = insertSTMT.executeUpdate();
 
-                        //get reference to stage and close it
-                    } catch (SQLIntegrityConstraintViolationException e) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Delete failed");
-                        alert.setContentText("Agent has customers and cannot be deleted");
-                        alert.showAndWait();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    //checks of there are any changes
+                    if (numInsertRows == 0)
+                    {
+                        System.out.println("Insert failed");
                     }
+                    //connect to main database
+                    Connection conn = DriverManager.getConnection(properties.getDatabaseURL(), properties.getDatabaseUser(), properties.getDatabasePwd());
 
+                    //sql to delete selected package
+                    String sql = "DELETE FROM `packages` WHERE packageId=?";
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+
+                    //set variable for question mark
+                    stmt.setInt(1, packageId);
+
+                    //execute delete
+                    int numRows = stmt.executeUpdate();
+                    //checks if the delete function was successful
+                    if (numRows == 0)
+                    {
+                        archiveConn.rollback(savepoint); // revert insert
+                        System.out.println("update failed");
+                    }
+                    archiveConn.close();
+                    conn.close();
+                    getPackages();
                 }
-
-
-            });
-
-
-        }
+                catch (SQLIntegrityConstraintViolationException e)
+                {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Delete failed");
+                    alert.setContentText("The package is linked to other tables");
+                    alert.showAndWait();
+                }
+                catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
 
     /**
