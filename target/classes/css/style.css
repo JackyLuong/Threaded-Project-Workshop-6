@@ -1,0 +1,155 @@
+/*====================================================
+
+        light orange:   #FFBB65
+        medium orange:  #ff964f
+        dark orange:    #ff6e18
+
+======================================================*/
+
+
+
+
+root {
+    display: block;
+}
+
+
+/*.root {*/
+/*    -fx-background-image: url("../images/morainelake.jpg");*/
+/*    -fx-background-size: cover;*/
+/*}*/
+
+/*Login CSS*/
+.button{
+    -fx-background-color: #ff6e18;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
+.button:hover {
+    -fx-background-color: #ff964f;
+    -fx-text-fill: white;
+}
+#apLogin {
+    -fx-background-image: url("../images/morainelake.jpg");
+    -fx-background-size: cover;
+}
+
+#vboxLogin {
+    -fx-background-color:  #2f2f2fa3;
+    -fx-background-radius: 10px;
+}
+
+/*
+set the prompt text property #a0a0a0
+*/
+
+.textfieldLogin {
+    -fx-prompt-text-fill: #a0a0a0;
+    -fx-text-inner-color: white;
+    -fx-background-color: Transparent;
+    -fx-border-color: white;
+    -fx-border-width: 0px 0px 2px 0px;
+}
+
+.textfieldLogin:focused {
+    -fx-prompt-text-fill: #a0a0a0;
+}
+/*#ff6e18*/
+#btnLogin {
+    -fx-background-color: #ff964f;
+    -fx-text-fill: white;
+}
+
+#btnLogin:focused,
+#btnLogin:hover {
+    -fx-background-color: #ff6e18;
+}
+
+.textError {
+    -fx-border-color: red !important;
+    -fx-border-width: 0px 0px 2px 0px !important;
+    -fx-background-color:transparent !important;
+}
+
+
+
+/*Main CSS*/
+
+.mainButton {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-text-fill: black;
+
+}
+
+.mainButton:hover{
+    -fx-background-color: #ff964f;
+    -fx-text-fill: white;
+
+}
+/*.mainButton:focused{*/
+/*    -fx-background-color: #ff6e18;*/
+/*    -fx-text-fill: white;*/
+/*    -fx-font-size: 20px;*/
+
+/*}*/
+.selectedButton{
+    -fx-background-color: #ff6e18;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
+
+#bpLeft  {
+    -fx-background-color: #FFBB65;
+}
+
+#btnLogout {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+#btnLogout:focused {
+    -fx-background-color: #ff6e18;
+    -fx-text-fill: white;
+}
+#btnLogout:hover {
+    -fx-background-color: #ff964f;
+    -fx-text-fill: white;
+}
+
+
+/*Home CSS*/
+
+#apHome {
+    -fx-background-color: white;
+}
+
+/*Customer CSS*/
+
+/*#apCustTop {*/
+/*    -fx-border-width: 0px 0px 2px 0px;*/
+/*    -fx-border-color: #ff964f ;*/
+/*}*/
+
+#txtCustSearch {
+    -fx-border-width: 1px;
+    -fx-border-color: #ff964f ;
+}
+
+.btnCustClass{
+    -fx-background-color: #ff6e18;
+    -fx-text-fill: white;
+}
+
+
+
+.tvCSS{
+    -fx-selection-bar: #FFBB65;
+    -fx-selection-bar-non-focused: #ffdbad;
+
+}
+.tvCSS:focused{
+    -fx-background-color: transparent;
+}
+
+/*customer add-mod*/
