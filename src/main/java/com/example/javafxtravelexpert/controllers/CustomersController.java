@@ -412,8 +412,6 @@ public class CustomersController {
                 e.printStackTrace();
             }
         }
-
-
     }
 
 }
