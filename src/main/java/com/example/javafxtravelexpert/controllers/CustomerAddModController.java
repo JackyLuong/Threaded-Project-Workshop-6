@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 import com.example.javafxtravelexpert.entity.Customers;
 import com.example.javafxtravelexpert.utils.DBConnectionMngr;
 import com.example.javafxtravelexpert.utils.TravelExpertsProperties;
+import static com.example.javafxtravelexpert.utils.Validator.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,6 +24,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+
+
 
 public class CustomerAddModController {
 
@@ -101,7 +104,7 @@ public class CustomerAddModController {
         cbAgentId.setItems(agentIdList);
         getAgentIdList();
 
-        //disable txt for primary key
+        //disable txtbox for primary key
         txtCustID.setDisable(true);
 
         //Cancel
@@ -128,17 +131,25 @@ public class CustomerAddModController {
         //initiate DB connection and objects
         DBConnectionMngr cm = DBConnectionMngr.getInstance();
         TravelExpertsProperties prop = new TravelExpertsProperties();
+        //initialize jdbc objects
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        //define sql string
         String psql = "SELECT AGENTID FROM AGENTS";
+        //assign db connection obj
         Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),prop.getDatabasePwd());
+
+        //check connection obj
         if(conn != null){
             try {
+                //execute sql statement
                 pstmt = conn.prepareStatement(psql);
                 rs = pstmt.executeQuery();
+                //loop through the result and add to agent list obj
                 while (rs.next()){
                     agentIdList.add(rs.getInt(1));
                 }
+                //close jdbc connection objs
                 pstmt.close();
                 rs.close();
                 conn.close();
@@ -163,10 +174,9 @@ public class CustomerAddModController {
      * Initialize values of the text fields(Customer obj property)
      */
     public void initCustomer(int selectedCustomerIndex) {
-        System.out.println(customerList.size());
+
         isEdit = true;
         Customers customer = customerList.get(selectedCustomerIndex);
-
         txtCustID.setText(String.valueOf(customer.getCustId()));
         txtCustFirstName.setText(customer.getCustFirstName());
         txtCustLastName.setText(customer.getCustLastName());
@@ -188,64 +198,69 @@ public class CustomerAddModController {
      */
 
     private void modifyCustomer(MouseEvent mouseEvent){
+        //validate user input
+        if(isPresent(txtCustFirstName) && isPresent(txtCustLastName)){
+            DBConnectionMngr cm = DBConnectionMngr.getInstance(); // get connection obj
+            TravelExpertsProperties prop = new TravelExpertsProperties(); // instantiate property obj
+            PreparedStatement pstmt = null;
+            //define sql string
+            String psql = "UPDATE `CUSTOMERS` SET" +
+                    "`CustFirstName`=?," +
+                    "`CustLastName`=?," +
+                    "`CustAddress`=?," +
+                    "`CustCity`=?," +
+                    "`CustProv`=?," +
+                    "`CustPostal`=?," +
+                    "`CustCountry`=?," +
+                    "`CustHomePhone`=?," +
+                    "`CustBusPhone`=?," +
+                    "`CustEmail`=?," +
+                    "`AgentId`=? WHERE `CustomerID`=?";
 
-        DBConnectionMngr cm = DBConnectionMngr.getInstance(); // get connection obj
-        TravelExpertsProperties prop = new TravelExpertsProperties(); // instantiate property obj
-        PreparedStatement pstmt = null;
-        String psql = "UPDATE `CUSTOMERS` SET" +
-                "`CustFirstName`=?," +
-                "`CustLastName`=?," +
-                "`CustAddress`=?," +
-                "`CustCity`=?," +
-                "`CustProv`=?," +
-                "`CustPostal`=?," +
-                "`CustCountry`=?," +
-                "`CustHomePhone`=?," +
-                "`CustBusPhone`=?," +
-                "`CustEmail`=?," +
-                "`AgentId`=? WHERE `CustomerID`=?";
+            Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),  prop.getDatabasePwd()); //initiate db connection
 
-        Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(),  prop.getDatabasePwd()); //initiate db connection
+            try {
 
-        try {
+                conn.setAutoCommit(false); //disable auto commit
 
-            conn.setAutoCommit(false); //disable auto commit
+                pstmt = conn.prepareStatement(psql);
 
-            pstmt = conn.prepareStatement(psql);
+                //set sql parameter values
+                pstmt.setString(1,txtCustFirstName.getText());
+                pstmt.setString(2,txtCustLastName.getText());
+                pstmt.setString(3,txtCustAddress.getText());
+                pstmt.setString(4,txtCustCity.getText());
+                pstmt.setString(5,txtCustProvince.getText());
+                pstmt.setString(6,txtCustPostal.getText());
+                pstmt.setString(7,txtCustCountry.getText());
+                pstmt.setString(8,txtCustHomeNo.getText());
+                pstmt.setString(9,txtCustBusNo.getText());
+                pstmt.setString(10,txtCustEmail.getText());
+                pstmt.setInt(11,cbAgentId.getValue());
+                pstmt.setInt(12, Integer.parseInt(txtCustID.getText()));
+                //execute sql
+                int rows = pstmt.executeUpdate();
 
-            //set sql parameter values
-            pstmt.setString(1,txtCustFirstName.getText());
-            pstmt.setString(2,txtCustLastName.getText());
-            pstmt.setString(3,txtCustAddress.getText());
-            pstmt.setString(4,txtCustCity.getText());
-            pstmt.setString(5,txtCustProvince.getText());
-            pstmt.setString(6,txtCustPostal.getText());
-            pstmt.setString(7,txtCustCountry.getText());
-            pstmt.setString(8,txtCustHomeNo.getText());
-            pstmt.setString(9,txtCustBusNo.getText());
-            pstmt.setString(10,txtCustEmail.getText());
-            pstmt.setInt(11,cbAgentId.getValue());
-            pstmt.setInt(12, Integer.parseInt(txtCustID.getText()));
+                //commit or rollback
+                if(rows == 1){
+                    conn.commit();
+                }else {
+                    System.out.println("Update Failed");
+                    conn.rollback();
+                }
 
-            int rows = pstmt.executeUpdate();
+                //close objects
+                pstmt.close();
+                conn.close();
 
-            //commit or rollback
-            if(rows == 1){
-                conn.commit();
-            }else {
-                System.out.println("Update Failed");
-                conn.rollback();
+                closeDialog(mouseEvent);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-
-            //close objects
-            pstmt.close();
-            conn.close();
-
-            closeDialog(mouseEvent);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
+
 
     }
 
@@ -253,60 +268,66 @@ public class CustomerAddModController {
      * method that saves the new Customer obj to the DB
      */
     private void addCustomer(MouseEvent mouseEvent) {
+        //validate user input
+        if(isPresent(txtCustFirstName) && isPresent(txtCustLastName)){
+            DBConnectionMngr cm = DBConnectionMngr.getInstance();// get connection obj
+            TravelExpertsProperties prop = new TravelExpertsProperties();// instantiate property obj
+            PreparedStatement pstmt = null;
+            String psql = "INSERT INTO `CUSTOMERS` (" +
+                    "`CustFirstName`," +
+                    "`CustLastName`," +
+                    "`CustAddress`," +
+                    "`CustCity`," +
+                    "`CustProv`," +
+                    "`CustPostal`," +
+                    "`CustCountry`," +
+                    "`CustHomePhone`," +
+                    "`CustBusPhone`," +
+                    "`CustEmail`," +
+                    "`AgentId`)" +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
-        DBConnectionMngr cm = DBConnectionMngr.getInstance();// get connection obj
-        TravelExpertsProperties prop = new TravelExpertsProperties();// instantiate property obj
-        PreparedStatement pstmt = null;
-        String psql = "INSERT INTO `CUSTOMERS` (" +
-                "`CustFirstName`," +
-                "`CustLastName`," +
-                "`CustAddress`," +
-                "`CustCity`," +
-                "`CustProv`," +
-                "`CustPostal`," +
-                "`CustCountry`," +
-                "`CustHomePhone`," +
-                "`CustBusPhone`," +
-                "`CustEmail`," +
-                "`AgentId`)" +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            //get and assign db connection obj
+            Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());//initiate db connection
 
-        Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());//initiate db connection
+            if(conn != null){
+                try {
+                    conn.setAutoCommit(false);
+                    //set sql parameter values
+                    pstmt = conn.prepareStatement(psql);
+                    pstmt.setString(1,txtCustFirstName.getText());
+                    pstmt.setString(2,txtCustLastName.getText());
+                    pstmt.setString(3,txtCustAddress.getText());
+                    pstmt.setString(4,txtCustCity.getText());
+                    pstmt.setString(5,txtCustProvince.getText());
+                    pstmt.setString(6,txtCustPostal.getText());
+                    pstmt.setString(7,txtCustCountry.getText());
+                    pstmt.setString(8,txtCustHomeNo.getText());
+                    pstmt.setString(9,txtCustBusNo.getText());
+                    pstmt.setString(10,txtCustEmail.getText());
+                    pstmt.setInt(11,cbAgentId.getValue());
+                    int rows = pstmt.executeUpdate();
 
-        try {
-            conn.setAutoCommit(false);
-            //set sql parameter values
-            pstmt = conn.prepareStatement(psql);
-            pstmt.setString(1,txtCustFirstName.getText());
-            pstmt.setString(2,txtCustLastName.getText());
-            pstmt.setString(3,txtCustAddress.getText());
-            pstmt.setString(4,txtCustCity.getText());
-            pstmt.setString(5,txtCustProvince.getText());
-            pstmt.setString(6,txtCustPostal.getText());
-            pstmt.setString(7,txtCustCountry.getText());
-            pstmt.setString(8,txtCustHomeNo.getText());
-            pstmt.setString(9,txtCustBusNo.getText());
-            pstmt.setString(10,txtCustEmail.getText());
-            pstmt.setInt(11,cbAgentId.getValue());
-            int rows = pstmt.executeUpdate();
+                    //commit or rollback
+                    if(rows == 1){
+                        conn.commit();
+                    }else {
+                        System.out.println("Insert Failed");
+                        conn.rollback();
+                    }
 
-            //commit or rollback
-            if(rows == 1){
-                conn.commit();
-            }else {
-                System.out.println("Insert Failed");
-                conn.rollback();
+                    //close obj
+                    pstmt.close();
+                    conn.close();
+
+                    closeDialog(mouseEvent);
+
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
-            //close obj
-            pstmt.close();
-            conn.close();
-
-            closeDialog(mouseEvent);
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
 

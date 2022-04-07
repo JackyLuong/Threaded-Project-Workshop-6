@@ -208,7 +208,6 @@ public class CustomersController {
         String email = customer.getCustEmail();
         int agentId = customer.getCustAgentId();
 
-
         DBConnectionMngr cm = DBConnectionMngr.getInstance(); //get conn obj
         TravelExpertsProperties prop = new TravelExpertsProperties(); //instantiate property obj
         PreparedStatement pstmt = null;
@@ -273,9 +272,15 @@ public class CustomersController {
                 } else {
                     archiveConn.rollback(); //rollback insert
                     conn.rollback(); //rollback delete
+                    //alert user on the failed delete
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Delete failed");
+                    alert.setContentText("Customer cannot be deleted!");
+                    alert.showAndWait();
                 }
 
             }catch (SQLIntegrityConstraintViolationException e) {
+                //alert user on the failed delete
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Delete failed");
                 alert.setContentText("Customer has booking and cannot be deleted!");
@@ -309,23 +314,28 @@ public class CustomersController {
         TravelExpertsProperties prop = new TravelExpertsProperties();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        //define sql string
         String psql = "SELECT * FROM CUSTOMERS WHERE CUSTLASTNAME LIKE? OR CUSTFIRSTNAME LIKE? ORDER BY CustLastName";
         String searchCust = "%" + txtCustomer.getText() + "%";
         Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());
-        //execute
+        //check the connection object
         if(conn != null){
             try {
+                //execute the sql statement
                 pstmt = conn.prepareStatement(psql);
                 pstmt.setString(1,searchCust);
                 pstmt.setString(2,searchCust);
                 rs = pstmt.executeQuery();
+                //loop through the result
                 while (rs.next()){
+                    //create obj and add to data list
                     data.add(new Customers(rs.getInt(1),rs.getString(2),rs.getString(3),
                             rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),
                             rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),
                             rs.getInt(12)));
 
                 }
+                //close jdbc objs
                 pstmt.close();
                 rs.close();
                 conn.close();
@@ -386,24 +396,30 @@ public class CustomersController {
      */
     private void getCustomers() {
         data.clear();
+        //initiate DB connection and initialize jdbc objects
         DBConnectionMngr cm = DBConnectionMngr.getInstance();
         TravelExpertsProperties prop = new TravelExpertsProperties();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        //define sql string
         String psql = "SELECT * FROM CUSTOMERS ORDER BY CustLastName";
         Connection conn = cm.getConnection(prop.getDatabaseURL(), prop.getDatabaseUser(), prop.getDatabasePwd());
-
+        //check connection obj
         if(conn != null){
             try {
+                //execute sql
                 pstmt = conn.prepareStatement(psql);
                 rs = pstmt.executeQuery();
+                //loop through the result
                 while (rs.next()){
+                    //create customer obj and add to data list
                     data.add(new Customers(rs.getInt(1),rs.getString(2),rs.getString(3),
                             rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),
                             rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),
                             rs.getInt(12)));
 
                 }
+                //close jdbc obj
                 pstmt.close();
                 rs.close();
                 conn.close();
