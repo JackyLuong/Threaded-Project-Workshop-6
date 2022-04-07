@@ -163,10 +163,12 @@ public class CustomersController {
 
         //delete customer
         btnCustDelete.setOnMouseClicked(mouseEvent -> {
+
+
             //ask for confirmation
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete customer?");
-            alert.setContentText("Are you sure on deleting the customer?");
+            alert.setContentText("Are you sure to delete the customer?");
             ButtonType yesButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
             ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(yesButton, noButton);
@@ -174,7 +176,10 @@ public class CustomersController {
                 if (type == yesButton){
 
                     delCustomer(); // call delete method
+                    //get update customer list
+                    getCustomers();
                     tvCustomers.getSelectionModel().select(0);// highlight the first customer data
+                    ;
                 }
             });
 
@@ -254,6 +259,7 @@ public class CustomersController {
 
                 //initiate insert row to archive db
                 conn.setAutoCommit(false);
+
                 //set sql parameter value
                 pstmt = conn.prepareStatement(delPsql);
                 pstmt.setInt(1, customer.getCustId());
@@ -269,17 +275,24 @@ public class CustomersController {
                     conn.rollback(); //rollback delete
                 }
 
-                //close connection objs
-                pstmt.close();
-                archiveConn.close();
-                conn.close();
-
-                //get update customer list
-                getCustomers();
-
+            }catch (SQLIntegrityConstraintViolationException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Delete failed");
+                alert.setContentText("Customer has booking and cannot be deleted!");
+                alert.showAndWait();
 
             }catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    //close connection objs
+                    pstmt.close();
+                    archiveConn.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
             }
 
         }
