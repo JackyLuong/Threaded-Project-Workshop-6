@@ -152,3 +152,9 @@ set the prompt text property #a0a0a0
     -fx-background-color: transparent;
 }
 
+/*Package CSS*/
+#apPackageTop {
+    -fx-border-width: 0px 0px 2px 0px;
+    -fx-border-color: #ff964f ;
+}
+

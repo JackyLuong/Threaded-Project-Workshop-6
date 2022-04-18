@@ -29,6 +29,23 @@ public class Validator
 
         return result;
     }
+    /**
+     * Checks if the text field contains a value and doesn't display an alert
+     * @param tf
+     * @return true if present
+     */
+    public static boolean isPresentWithoutMessage(TextField tf)
+    {
+        boolean result = true;
+
+        //value is null or empty
+        if(tf.getText() == null || tf.getText().isEmpty())
+        {
+            result = false;
+        }
+
+        return result;
+    }
 
     /**
      * Checks if a double value is positive
@@ -36,26 +53,47 @@ public class Validator
      * @return
      */
     public static boolean isDoublePositive(TextField tf)
+{
+    boolean result = true;
+    //value isnt a double
+    if(!tryParseDouble(tf.getText()))
+    {
+
+        result = false;
+        Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
+        a.setTitle(tf.getId() + " Invalid Input");
+        a.setContentText("Value must be a number in " + tf.getId());
+        a.show();
+    }
+    //value is negative
+    else if(Double.parseDouble(tf.getText()) < 0)
+    {
+        result = false;
+        Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
+        a.setTitle(tf.getId() + " Invalid Input");
+        a.setContentText("Value must be a positive number in " + tf.getId());
+        a.show();
+    }
+    return result;
+}
+
+    /**
+     * Checks if double is positive but doesnt display alert
+     * @param tf
+     * @return
+     */
+    public static boolean isDoublePositiveWithoutMessage(TextField tf)
     {
         boolean result = true;
         //value isnt a double
         if(!tryParseDouble(tf.getText()))
         {
-
             result = false;
-            Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
-            a.setTitle(tf.getId() + " Invalid Input");
-            a.setContentText("Value must be a number in " + tf.getId());
-            a.show();
         }
         //value is negative
         else if(Double.parseDouble(tf.getText()) < 0)
         {
             result = false;
-            Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
-            a.setTitle(tf.getId() + " Invalid Input");
-            a.setContentText("Value must be a positive number in " + tf.getId());
-            a.show();
         }
         return result;
     }
@@ -90,6 +128,56 @@ public class Validator
         return result;
     }
 
+    /**
+     * Checks if a int value is positive
+     * @param tf
+     * @return
+     */
+    public static boolean isIntPositive(TextField tf)
+    {
+        boolean result = true;
+        //value isnt a int
+        if(!tryParseInt(tf.getText()))
+        {
+
+            result = false;
+            Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
+            a.setTitle(tf.getId() + " Invalid Input");
+            a.setContentText("Value must be a number in " + tf.getId());
+            a.show();
+        }
+        //value is negative
+        else if(Integer.parseInt(tf.getText()) < 0)
+        {
+            result = false;
+            Alert a = new Alert(Alert.AlertType.ERROR); // prints error message
+            a.setTitle(tf.getId() + " Invalid Input");
+            a.setContentText("Value must be a positive number in " + tf.getId());
+            a.show();
+        }
+        return result;
+    }
+
+    /**
+     * Checks if int is positive but doesnt display alert
+     * @param tf
+     * @return
+     */
+    public static boolean isIntPositiveWithoutMessage(TextField tf)
+    {
+        boolean result = true;
+        //value isnt a int
+        if(!tryParseInt(tf.getText()))
+        {
+            result = false;
+        }
+        //value is negative
+        else if(Integer.parseInt(tf.getText()) < 0)
+        {
+            result = false;
+        }
+        return result;
+    }
     /**
      * Checks if the start date is a valid entry
      * @param tf
@@ -189,11 +277,28 @@ public class Validator
 
         return result;
     }
+    /**
+     * Checks if a string object can convert to a int object
+     * Inspired by a solution in stackoverflow
+     * url: https://stackoverflow.com/questions/8391979/does-java-have-a-int-tryparse-that-doesnt-throw-an-exception-for-bad-data
+     * @param value
+     * @return
+     */
+    private static boolean tryParseInt (String value)
+    {
+        boolean result = true;
+        try
+        {
+            //parse string to double
+            int intValue = Integer.parseInt(value);
+        }
+        catch (NumberFormatException e) // failed to parse string to double
+        {
+            result = false;
+        }
 
-
-
-
-
+        return result;
+    }
 
     /**
      * Checks if the login credentials are present
@@ -261,8 +366,4 @@ public class Validator
         }
         return  isValidUser;
     }
-
-
-
-
 }

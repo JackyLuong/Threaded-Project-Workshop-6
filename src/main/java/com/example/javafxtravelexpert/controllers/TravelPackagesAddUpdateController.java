@@ -211,7 +211,7 @@ public class TravelPackagesAddUpdateController {
             Validator.isEndDateValid(tfStartDate, tfEndDate) &&
             Validator.isDoubleInRange(0,basePrice,tfAgencyCommission))
         {
-            //load the agents from the database
+            //load the packages from the database
             DBConnectionMngr cm = DBConnectionMngr.getInstance(); // get connection obj
             TravelExpertsProperties prop = new TravelExpertsProperties(); // instantiate property obj
 

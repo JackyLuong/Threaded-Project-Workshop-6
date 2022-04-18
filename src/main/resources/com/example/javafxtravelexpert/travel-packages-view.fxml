@@ -10,6 +10,7 @@
 
 <AnchorPane fx:id="apBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxtravelexpert.controllers.TravelPackagesController">
    <children>
+      <AnchorPane id="apPackageTop" layoutX="2.0" prefHeight="17.0" prefWidth="1000.0" />
       <TableView fx:id="tvPackages" layoutX="188.0" layoutY="30.0" onMouseClicked="#onTvPackagesClicked" prefHeight="540.0" prefWidth="772.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="188.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="30.0">
         <columns>
             <TableColumn fx:id="colPkgId" prefWidth="75.0" text="Package ID" />
@@ -37,7 +38,7 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="btnModify" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Modify">
+                  <Button fx:id="btnModify" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Modify">
                      <font>
                         <Font name="Calibri" size="18.0" />
                      </font>
@@ -46,7 +47,7 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Delete">
+                  <Button fx:id="btnDelete" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="110.0" text="Delete">
                      <font>
                         <Font name="Calibri" size="18.0" />
                      </font>

@@ -225,7 +225,11 @@ public class TravelPackagesController {
     @FXML
     void onTvPackagesClicked(MouseEvent event) {
         if(tvPackages.getSelectionModel().getSelectedItem() != null)
+        {
             selectedPackageIndex = tvPackages.getSelectionModel().getSelectedIndex();
+            btnDelete.setDisable(false);
+            btnModify.setDisable(false);
+        }
     }
 
 
@@ -237,7 +241,7 @@ public class TravelPackagesController {
         //clear the observable list prior to adding the data
         data.clear();
 
-        //load the agents from the database
+        //load the packages from the database
         DBConnectionMngr cm = DBConnectionMngr.getInstance();
         TravelExpertsProperties prop = new TravelExpertsProperties();
 
@@ -251,7 +255,7 @@ public class TravelPackagesController {
             ResultSet rs = stmt.executeQuery("select * from packages");
             //format prices to commission to canadian currency
             NumberFormat currency = NumberFormat.getCurrencyInstance();
-            //get all data from agents table
+            //get all data from packages table
             while (rs.next())
             {
                 data.add(new Packages

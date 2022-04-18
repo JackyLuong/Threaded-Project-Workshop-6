@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafxtravelexpert.controllers.BookingAddUpdateController">
+    <children>
+        <VBox layoutX="117.0" layoutY="25.0" prefHeight="253.0" prefWidth="153.0">
+            <children>
+                <Label text="Booking Date:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+                <Label prefHeight="18.0" prefWidth="134.0" text="Booking No:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Booking Total:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Traveler Count:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Customer ID:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Trip Type ID:">
+                    <font>
+                        <Font name="Calibri" size="16.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="17.0" />
+                    </VBox.margin>
+                </Label>
+            <Label text="Package ID:">
+               <font>
+                  <Font name="Calibri" size="16.0" />
+               </font>
+            </Label>
+            </children>
+        </VBox>
+        <VBox layoutX="270.0" layoutY="25.0" prefHeight="280.0" prefWidth="247.0">
+            <children>
+                <TextField fx:id="tfBookingDate">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+                <TextField fx:id="tfBookingNo">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+                <TextField fx:id="tfBookingTotal" disable="true">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+                <TextField fx:id="tfTravelerCount" onAction="#onTextChanged" onKeyReleased="#onTextChanged">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+                <TextField fx:id="tfCustomerId">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+                <TextField fx:id="tfTripTypeId">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </TextField>
+            <TextField fx:id="tfPackageId" layoutX="10.0" layoutY="185.0" onKeyReleased="#onTextChanged" />
+            </children>
+        </VBox>
+        <Button fx:id="btnSave" layoutX="226.0" layoutY="305.0" mnemonicParsing="false" text="Save">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Button>
+        <Button fx:id="btnCancel" layoutX="333.0" layoutY="305.0" mnemonicParsing="false" text="Cancel">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Button>
+    </children>
+
+</AnchorPane>
