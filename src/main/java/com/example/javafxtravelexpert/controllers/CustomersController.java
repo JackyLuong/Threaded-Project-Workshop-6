@@ -6,10 +6,7 @@ package com.example.javafxtravelexpert.controllers;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ResourceBundle;
 
 
@@ -24,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -197,6 +195,122 @@ public class CustomersController {
 
         getCustomers(); //get updated customers
         tvCustomers.getSelectionModel().select(selectedCustomerIndex);// highlight the updated customer data
+
+    }
+    /**
+     * Method that deletes the customer data and insert to the archive db
+     */
+
+    private void delCustomer() {
+
+        //define and assign variables
+        Customers customer = data.get(selectedCustomerIndex);
+        int oldPackageId = customer.getCustId();
+        String firstName = customer.getCustFirstName();
+        String lastName = customer.getCustLastName();
+        String address = customer.getCustAddress();
+        String city = customer.getCustCity();
+        String province = customer.getCustProvince();
+        String postal = customer.getCustPostal();
+        String country = customer.getCustCountry();
+        String homeNo = customer.getCustHomeNum();
+        String busNo = customer.getCustBusNum();
+        String email = customer.getCustEmail();
+        int agentId = customer.getCustAgentId();
+
+        DBConnectionMngr cm = DBConnectionMngr.getInstance(); //get conn obj
+        TravelExpertsProperties prop = new TravelExpertsProperties(); //instantiate property obj
+        PreparedStatement pstmt = null;
+        String insertPsql = "INSERT INTO `CUSTOMERS` (" +
+                "`CustomerIdOld`," +
+                "`CustFirstName`," +
+                "`CustLastName`," +
+                "`CustAddress`," +
+                "`CustCity`," +
+                "`CustProv`," +
+                "`CustPostal`," +
+                "`CustCountry`," +
+                "`CustHomePhone`," +
+                "`CustBusPhone`," +
+                "`CustEmail`," +
+                "`AgentId`)" +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        String delPsql = "DELETE FROM `CUSTOMERS` WHERE CustomerId=?";
+
+        //connect to archive db
+        Connection archiveConn = cm.getConnection(prop.getDatabaseURLArchive(),prop.getDatabaseUser(), prop.getDatabasePwd());
+
+        //connect to prod db
+        Connection conn = cm.getConnection(prop.getDatabaseURL(),prop.getDatabaseUser(),prop.getDatabasePwd());
+
+        if(archiveConn != null && conn != null) {
+            try {
+
+                //initiate delete row
+                archiveConn.setAutoCommit(false);
+                pstmt = archiveConn.prepareStatement(insertPsql);
+                //set sql parameter value
+                pstmt.setInt(1, oldPackageId);
+                pstmt.setString(2, firstName);
+                pstmt.setString(3, lastName);
+                pstmt.setString(4, address);
+                pstmt.setString(5, city);
+                pstmt.setString(6, province);
+                pstmt.setString(7, postal);
+                pstmt.setString(8, country);
+                pstmt.setString(9, homeNo);
+                pstmt.setString(10, busNo);
+                pstmt.setString(11, email);
+                pstmt.setInt(12, agentId);
+
+                int insertRow = pstmt.executeUpdate();
+
+                //initiate insert row to archive db
+                conn.setAutoCommit(false);
+
+                //set sql parameter value
+                pstmt = conn.prepareStatement(delPsql);
+                pstmt.setInt(1, customer.getCustId());
+                int delRow = pstmt.executeUpdate();
+
+                //validate the number of delete/insert row
+                if (insertRow == 1 && delRow == 1) {
+                    archiveConn.commit(); // commit insert
+                    conn.commit(); //commit delete
+
+                } else {
+                    archiveConn.rollback(); //rollback insert
+                    conn.rollback(); //rollback delete
+                    //alert user on the failed delete
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Delete failed");
+                    alert.setContentText("Customer cannot be deleted!");
+                    alert.showAndWait();
+                }
+
+            }catch (SQLIntegrityConstraintViolationException e) {
+                //alert user on the failed delete
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Delete failed");
+                alert.setContentText("Customer has booking and cannot be deleted!");
+                alert.showAndWait();
+
+            }catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    //close connection objs
+                    pstmt.close();
+                    archiveConn.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
 
     }
 
