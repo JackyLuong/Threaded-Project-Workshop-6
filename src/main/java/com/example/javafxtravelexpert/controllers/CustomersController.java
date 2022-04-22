@@ -21,14 +21,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-<<<<<<< Updated upstream
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-=======
+
 import javafx.scene.control.*;
->>>>>>> Stashed changes
+
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -250,7 +250,7 @@ public class CustomersController {
         TravelExpertsProperties prop = new TravelExpertsProperties(); //instantiate property obj
         PreparedStatement pstmt = null;
         String insertPsql = "INSERT INTO `CUSTOMERS` (" +
-                "`CustomerIdOld`," +
+                "`CustomerId`," +
                 "`CustFirstName`," +
                 "`CustLastName`," +
                 "`CustAddress`," +
