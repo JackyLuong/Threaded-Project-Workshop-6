@@ -21,10 +21,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+<<<<<<< Updated upstream
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+=======
+import javafx.scene.control.*;
+>>>>>>> Stashed changes
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -152,6 +156,30 @@ public class CustomersController {
 
         //add new customer data
         btnCustAdd.setOnMouseClicked(mouseEvent -> openCustDialog(false));
+
+        //delete customer
+        btnCustDelete.setOnMouseClicked(mouseEvent -> {
+
+
+            //ask for confirmation
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete customer?");
+            alert.setContentText("Are you sure to delete the customer?");
+            ButtonType yesButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(yesButton, noButton);
+            alert.showAndWait().ifPresent(type ->{
+                if (type == yesButton){
+
+                    delCustomer(); // call delete method
+                    //get update customer list
+                    getCustomers();
+                    tvCustomers.getSelectionModel().select(0);// highlight the first customer data
+                    ;
+                }
+            });
+
+        });
 
     }
 
