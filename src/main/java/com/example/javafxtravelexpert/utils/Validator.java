@@ -278,46 +278,6 @@ public class Validator
         return result;
     }
     /**
-     * Checks if a string object can convert to a int object
-     * Inspired by a solution in stackoverflow
-     * url: https://stackoverflow.com/questions/8391979/does-java-have-a-int-tryparse-that-doesnt-throw-an-exception-for-bad-data
-     * @param value
-     * @return
-     */
-    private static boolean tryParseInt (String value)
-    {
-        boolean result = true;
-        try
-        {
-            //parse string to double
-            int intValue = Integer.parseInt(value);
-        }
-        catch (NumberFormatException e) // failed to parse string to double
-        {
-            result = false;
-        }
-
-        return result;
-    }
-
-    /**
-     * Checks if the login credentials are present
-     * @param text
-     * @return true if present
-     */
-    public static boolean isLoginDataPresent(TextField text, Label label){
-        boolean isValid = true;
-        if(text.getText().isEmpty()){
-            isValid = false;
-            label.setText(text.getAccessibleText()+ " is required.");
-            text.getStyleClass().add("textError");
-            text.requestFocus();
-
-        }
-        return isValid;
-    }
-
-    /**
      * Validate the email and password against the DB data.
      * @param usr, passwd
      * @return true if authenticated
@@ -366,4 +326,47 @@ public class Validator
         }
         return  isValidUser;
     }
+
+    /**
+     * Checks if a string object can convert to a int object
+     * Inspired by a solution in stackoverflow
+     * url: https://stackoverflow.com/questions/8391979/does-java-have-a-int-tryparse-that-doesnt-throw-an-exception-for-bad-data
+     * @param value
+     * @return
+     */
+    private static boolean tryParseInt (String value)
+    {
+        boolean result = true;
+        try
+        {
+            //parse string to double
+            int intValue = Integer.parseInt(value);
+        }
+        catch (NumberFormatException e) // failed to parse string to double
+        {
+            result = false;
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks if the login credentials are present
+     * @param text
+     * @return true if present
+     */
+    public static boolean isLoginDataPresent(TextField text, Label label){
+        boolean isValid = true;
+        if(text.getText().isEmpty()){
+            isValid = false;
+            label.setText(text.getAccessibleText()+ " is required.");
+            text.getStyleClass().add("textError");
+            text.requestFocus();
+
+        }
+        return isValid;
+    }
+
+
+
 }

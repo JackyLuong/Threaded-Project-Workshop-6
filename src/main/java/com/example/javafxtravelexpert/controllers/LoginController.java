@@ -20,7 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 
-
+import static com.example.javafxtravelexpert.utils.Validator.isAuthenticated;
 import static com.example.javafxtravelexpert.utils.Validator.isLoginDataPresent;
 
 public class LoginController {
@@ -67,7 +67,7 @@ public class LoginController {
         //call method when login button is clicked
         btnLogin.setOnMouseClicked(mouseEvent -> {
             if(isLoginDataPresent(txtEmail,lblEmailError) && isLoginDataPresent(txtPassword, lblPasswordError)
-//commented for now                        && isAuthenticated(txtEmail, txtPassword)
+                       && isAuthenticated(txtEmail, txtPassword)
                        ){
                 //if validation is successful. Load the main scene.
                 try {
